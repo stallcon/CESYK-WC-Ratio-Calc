@@ -120,6 +120,10 @@
           </div>
           <div class="report-content">
             <div class="report-meta">
+              <article class="report-field">
+                <label for="projectName">Project Name</label>
+                <input id="projectName" name="projectName" type="text" placeholder="Enter project name">
+              </article>
               <article>
                 <span>Date</span>
                 <output id="reportDate">--</output>
@@ -129,10 +133,11 @@
                 <output id="reportTime">--</output>
               </article>
               <article>
-                <span>Location</span>
+                <span>Nearest Address</span>
                 <output id="reportLocation">Requesting location...</output>
               </article>
             </div>
+            <p class="location-attribution">Nearest address lookup uses OpenStreetMap Nominatim.</p>
             <div class="report-tools">
               <label class="photo-control" for="ticketPhoto">
                 <span>Ticket Photo</span>
@@ -161,8 +166,9 @@
             <li>Enter cement, fly ash, and other supplementary cement material.</li>
             <li>Enter plant water and any additional site water.</li>
             <li>Review the Water-Cement Ratio and Mix Summary values.</li>
+            <li>Enter the project name in Report Details.</li>
             <li>Optionally open the Mix Design and Report tab to enter the mix design and any third-party test results provided.</li>
-            <li>Attach the ticket photo for the report record.</li>
+            <li>Attach the ticket photo so it can be included in the PDF report.</li>
             <li>Confirm the logged location, then print or save the combined report as a PDF.</li>
           </ol>
         </section>

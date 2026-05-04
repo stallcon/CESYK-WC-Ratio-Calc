@@ -7,8 +7,10 @@ A free, public, dependency-free web version of the original Excel water-cement r
 - Runs directly in the browser
 - No build step, install, backend, database, or paid software required
 - Supports US Customary and Metric inputs
-- Allows users to attach a ticket photo to the report
+- Allows users to attach a ticket photo and include it in the PDF report
 - Logs report date, time, and browser-provided location
+- Adds project name to report details
+- Looks up a nearest address from the logged GPS coordinates when the user approves the address lookup
 - Includes a Mix Design and Report page for supplier details, agency details, test results, and break result fields
 - Includes a Print / Save PDF report action
 - Ready for GitHub Pages or any static web host
@@ -27,6 +29,10 @@ Open `index.html` in any modern web browser, or publish the repository with GitH
 6. The included workflow will publish the app when changes are pushed to `main`.
 
 You can also publish without Actions by setting `Source` to `Deploy from a branch`, then selecting `main` and `/ (root)`.
+
+## Location Lookup
+
+The app uses browser location services to log coordinates. If the user approves the nearest-address lookup prompt, the app sends the coordinates to OpenStreetMap Nominatim and stores the returned nearest address in the report. If lookup is unavailable, the report keeps the GPS coordinates.
 
 ## Project Files
 

@@ -316,7 +316,7 @@ select:focus {
 }
 
 .report-meta {
-  grid-template-columns: minmax(150px, 0.45fr) minmax(170px, 0.45fr) minmax(260px, 1.1fr);
+  grid-template-columns: minmax(190px, 0.8fr) minmax(150px, 0.45fr) minmax(170px, 0.45fr) minmax(260px, 1.1fr);
 }
 
 .report-meta article {
@@ -325,6 +325,40 @@ select:focus {
 
 .report-meta output {
   font-size: 1rem;
+}
+
+.report-field {
+  gap: 10px;
+}
+
+.report-field label {
+  min-height: 0;
+  display: block;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.report-field input {
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  text-align: left;
+  font-size: 1.04rem;
+  font-weight: 850;
+}
+
+.report-field input:focus {
+  box-shadow: none;
+}
+
+.location-attribution {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .report-tools {
@@ -657,6 +691,25 @@ article output {
     padding-bottom: 5px;
     border-bottom: 1px solid #cfd7df;
     font-size: 13pt;
+  }
+
+  .print-ticket-section figure {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .print-ticket-section img {
+    width: 100%;
+    max-height: 4.75in;
+    border: 1px solid #cfd7df;
+    object-fit: contain;
+  }
+
+  .print-ticket-section figcaption {
+    color: #666b73;
+    font-size: 8.5pt;
+    font-weight: 800;
   }
 
   .print-grid {

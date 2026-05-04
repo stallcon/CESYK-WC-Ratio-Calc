@@ -52,12 +52,15 @@ const ticketPreview = document.querySelector("#ticketPreview");
 const printReportButton = document.querySelector("#printReport");
 const logLocationButton = document.querySelector("#logLocation");
 const designTestingLink = document.querySelector("#designTestingLink");
+const projectNameInput = document.querySelector("#projectName");
 const reportDate = document.querySelector("#reportDate");
 const reportTime = document.querySelector("#reportTime");
 const reportLocation = document.querySelector("#reportLocation");
 const combinedPrintReport = document.querySelector("#combinedPrintReport");
 let ticketPhotoAttached = false;
 let ticketPhotoUrl = "";
+let ticketPhotoDataUrl = "";
+let ticketPhotoName = "";
 let locationLogged = false;
 
 const numberFormatter = new Intl.NumberFormat("en-US", {
@@ -95,6 +98,32 @@ function updateReportDateTime() {
   }).format(now);
 }
 
+function formatCoordinates(latitude, longitude, accuracy) {
+  return `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m accuracy)`;
+}
+
+async function findNearestAddress(latitude, longitude) {
+  const params = new URLSearchParams({
+    format: "jsonv2",
+    lat: String(latitude),
+    lon: String(longitude),
+    addressdetails: "1",
+    zoom: "18",
+  });
+  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Address lookup failed");
+  }
+
+  const place = await response.json();
+  return place.display_name || "";
+}
+
 function requestLocation() {
   updateReportDateTime();
   reportLocation.value = "Requesting location...";
@@ -108,10 +137,34 @@ function requestLocation() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude, accuracy } = position.coords;
+        const coordinates = formatCoordinates(latitude, longitude, accuracy);
         locationLogged = true;
-        reportLocation.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m accuracy)`;
+        reportLocation.value = coordinates;
+        updateReportDateTime();
+
+        const shouldFindAddress = window.confirm(
+          "To identify the nearest address, this app will send the logged GPS coordinates to OpenStreetMap Nominatim. Continue with nearest address lookup?"
+        );
+
+        if (!shouldFindAddress) {
+          saveReportValues();
+          resolve(true);
+          return;
+        }
+
+        reportLocation.value = "Finding nearest address...";
+
+        try {
+          const nearestAddress = await findNearestAddress(latitude, longitude);
+          reportLocation.value = nearestAddress
+            ? `${nearestAddress} | GPS: ${coordinates}`
+            : `${coordinates} | Nearest address unavailable`;
+        } catch {
+          reportLocation.value = `${coordinates} | Nearest address unavailable`;
+        }
+
         updateReportDateTime();
         saveReportValues();
         resolve(true);
@@ -180,9 +233,11 @@ function calculate() {
 }
 
 function saveReportValues() {
+  const previousReport = readStoredJson(REPORT_STORAGE_KEY) || {};
   const report = {
     unitSystem: fields.unitSystem.value,
     unitSystemLabel: fields.unitSystem.options[fields.unitSystem.selectedIndex]?.text || "",
+    projectName: projectNameInput.value.trim(),
     date: reportDate.value,
     time: reportTime.value,
     location: reportLocation.value,
@@ -199,9 +254,18 @@ function saveReportValues() {
     totalWater: outputs.totalWater.value,
     waterPerVolume: outputs.waterPerYard.value,
     cementPerVolume: outputs.cementPerYard.value,
+    ticketPhotoName: ticketPhotoName || previousReport.ticketPhotoName || "",
+    ticketPhotoDataUrl: ticketPhotoDataUrl || previousReport.ticketPhotoDataUrl || "",
   };
 
-  localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
+  try {
+    localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
+  } catch {
+    report.ticketPhotoDataUrl = "";
+    report.ticketPhotoName = "";
+    localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
+    ticketPhotoStatus.textContent = "Photo too large for saved PDF";
+  }
 }
 
 function readStoredJson(key) {
@@ -212,12 +276,41 @@ function readStoredJson(key) {
   }
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
 function reportItem(label, value) {
-  return `<article><span>${label}</span><strong>${value || "--"}</strong></article>`;
+  return `<article><span>${escapeHtml(label)}</span><strong>${value ? escapeHtml(value) : "--"}</strong></article>`;
 }
 
 function reportInput(label) {
-  return `<article class="print-fill-field"><span>${label}</span><div></div></article>`;
+  return `<article class="print-fill-field"><span>${escapeHtml(label)}</span><div></div></article>`;
+}
+
+function ticketPhotoSection(report) {
+  if (!report.ticketPhotoDataUrl) {
+    return "";
+  }
+
+  return `
+    <section class="print-ticket-section">
+      <h2>Ticket Photo</h2>
+      <figure>
+        <img src="${report.ticketPhotoDataUrl}" alt="Attached ticket photo">
+        <figcaption>${escapeHtml(report.ticketPhotoName || "Attached ticket photo")}</figcaption>
+      </figure>
+    </section>
+  `;
 }
 
 function buildCombinedPrintReport() {
@@ -238,11 +331,15 @@ function buildCombinedPrintReport() {
     <section>
       <h2>Report Details</h2>
       <div class="print-grid">
+        ${reportItem("Project Name", report.projectName)}
         ${reportItem("Date", report.date)}
         ${reportItem("Time", report.time)}
-        ${reportItem("Location", report.location)}
+        ${reportItem("Nearest Address", report.location)}
+        ${reportItem("Address Lookup", "OpenStreetMap Nominatim")}
       </div>
     </section>
+
+    ${ticketPhotoSection(report)}
 
     <section>
       <h2>Water-Cement Calculator</h2>
@@ -300,12 +397,49 @@ function buildCombinedPrintReport() {
   `;
 }
 
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(reader.result));
+    reader.addEventListener("error", reject);
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", reject);
+    image.src = dataUrl;
+  });
+}
+
+async function createPdfReadyTicketPhoto(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  const image = await loadImage(dataUrl);
+  const maxSize = 1400;
+  const scale = Math.min(1, maxSize / Math.max(image.naturalWidth, image.naturalHeight));
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0, width, height);
+
+  return canvas.toDataURL("image/jpeg", 0.82);
+}
+
 Object.values(fields).forEach((field) => {
   field.addEventListener("input", calculate);
   field.addEventListener("change", calculate);
 });
 
-ticketPhotoInput.addEventListener("change", () => {
+projectNameInput.addEventListener("input", saveReportValues);
+
+ticketPhotoInput.addEventListener("change", async () => {
   const [file] = ticketPhotoInput.files;
   ticketPhotoAttached = Boolean(file);
 
@@ -315,14 +449,28 @@ ticketPhotoInput.addEventListener("change", () => {
   }
 
   if (!file) {
+    ticketPhotoDataUrl = "";
+    ticketPhotoName = "";
     ticketPhotoStatus.textContent = "Take or attach photo";
     ticketPreview.innerHTML = "<span>No ticket photo attached</span>";
+    saveReportValues();
     return;
   }
 
   ticketPhotoUrl = URL.createObjectURL(file);
-  ticketPhotoStatus.textContent = file.name || "Ticket photo attached";
+  ticketPhotoName = file.name || "Ticket photo attached";
+  ticketPhotoStatus.textContent = ticketPhotoName;
   ticketPreview.innerHTML = `<img src="${ticketPhotoUrl}" alt="Attached ticket photo">`;
+
+  try {
+    ticketPhotoDataUrl = await createPdfReadyTicketPhoto(file);
+    ticketPreview.innerHTML = `<img src="${ticketPhotoDataUrl}" alt="Attached ticket photo">`;
+    saveReportValues();
+  } catch {
+    ticketPhotoDataUrl = "";
+    ticketPhotoStatus.textContent = "Photo could not be added to PDF";
+    saveReportValues();
+  }
 });
 
 logLocationButton.addEventListener("click", () => {
@@ -359,6 +507,18 @@ printReportButton.addEventListener("click", async () => {
 
 window.addEventListener("beforeprint", updateReportDateTime);
 window.addEventListener("beforeprint", saveReportValues);
+const savedReport = readStoredJson(REPORT_STORAGE_KEY) || {};
+if (savedReport.projectName) {
+  projectNameInput.value = savedReport.projectName;
+}
+if (savedReport.ticketPhotoDataUrl) {
+  ticketPhotoAttached = true;
+  ticketPhotoDataUrl = savedReport.ticketPhotoDataUrl;
+  ticketPhotoName = savedReport.ticketPhotoName || "Saved ticket photo";
+  ticketPhotoStatus.textContent = ticketPhotoName;
+  ticketPreview.innerHTML = `<img src="${ticketPhotoDataUrl}" alt="Attached ticket photo">`;
+}
+
 window.addEventListener("beforeprint", buildCombinedPrintReport);
 
 updateReportDateTime();

@@ -4,6 +4,7 @@ const DESIGN_STORAGE_KEY = "cesykDesignTestingReport";
 const designReportDate = document.querySelector("#designReportDate");
 const designReportTime = document.querySelector("#designReportTime");
 const designReportLocation = document.querySelector("#designReportLocation");
+const designProjectName = document.querySelector("#designProjectName");
 const printCombinedReport = document.querySelector("#printCombinedReport");
 const loadReportValues = document.querySelector("#loadReportValues");
 const designFields = [...document.querySelectorAll("#designForm input")];
@@ -51,30 +52,68 @@ function updateReportDateTime() {
   }).format(now);
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
 function article(label, value) {
-  return `<article><span>${label}</span><strong>${value || "--"}</strong></article>`;
+  return `<article><span>${escapeHtml(label)}</span><strong>${value ? escapeHtml(value) : "--"}</strong></article>`;
 }
 
 function reportInput(label) {
-  return `<article class="print-fill-field"><span>${label}</span><div></div></article>`;
+  return `<article class="print-fill-field"><span>${escapeHtml(label)}</span><div></div></article>`;
+}
+
+function ticketPhotoSection(report) {
+  if (!report.ticketPhotoDataUrl) {
+    return "";
+  }
+
+  return `
+    <section class="print-ticket-section">
+      <h2>Ticket Photo</h2>
+      <figure>
+        <img src="${report.ticketPhotoDataUrl}" alt="Attached ticket photo">
+        <figcaption>${escapeHtml(report.ticketPhotoName || "Attached ticket photo")}</figcaption>
+      </figure>
+    </section>
+  `;
 }
 
 function loadSavedCalculatorValues() {
   const report = readStoredJson(REPORT_STORAGE_KEY);
 
   if (!report) {
+    designProjectName.value = "";
     designReportLocation.value = "--";
     updateReportDateTime();
     return;
   }
 
+  designProjectName.value = report.projectName || "";
   designReportLocation.value = report.location || "--";
   designReportDate.value = report.date || "--";
   designReportTime.value = report.time || "--";
 }
 
+function saveCalculatorReportDetails() {
+  const report = readStoredJson(REPORT_STORAGE_KEY) || {};
+  report.projectName = designProjectName.value.trim();
+  localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
+}
+
 function buildCombinedPrintReport() {
   saveDesignValues();
+  saveCalculatorReportDetails();
   const report = readStoredJson(REPORT_STORAGE_KEY) || {};
   const design = readStoredJson(DESIGN_STORAGE_KEY) || {};
   const logoSrc = typeof CESYK_LOGO_SRC === "string" ? CESYK_LOGO_SRC : "./assets/logo.png";
@@ -91,11 +130,15 @@ function buildCombinedPrintReport() {
     <section>
       <h2>Report Details</h2>
       <div class="print-grid">
+        ${article("Project Name", report.projectName)}
         ${article("Date", designReportDate.value || report.date)}
         ${article("Time", designReportTime.value || report.time)}
-        ${article("Location", designReportLocation.value || report.location)}
+        ${article("Nearest Address", designReportLocation.value || report.location)}
+        ${article("Address Lookup", "OpenStreetMap Nominatim")}
       </div>
     </section>
+
+    ${ticketPhotoSection(report)}
 
     <section>
       <h2>Water-Cement Calculator</h2>
@@ -157,10 +200,16 @@ designFields.forEach((field) => {
   field.addEventListener("input", saveDesignValues);
 });
 
-loadReportValues.addEventListener("click", loadSavedCalculatorValues);
+designProjectName.addEventListener("input", saveCalculatorReportDetails);
+
+loadReportValues.addEventListener("click", () => {
+  saveCalculatorReportDetails();
+  loadSavedCalculatorValues();
+});
 
 printCombinedReport.addEventListener("click", () => {
   saveDesignValues();
+  saveCalculatorReportDetails();
   updateReportDateTime();
   buildCombinedPrintReport();
   window.print();
@@ -168,6 +217,7 @@ printCombinedReport.addEventListener("click", () => {
 
 window.addEventListener("beforeprint", () => {
   saveDesignValues();
+  saveCalculatorReportDetails();
   updateReportDateTime();
   buildCombinedPrintReport();
 });

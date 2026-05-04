@@ -91,6 +91,10 @@
           </div>
           <div class="report-content">
             <div class="report-meta">
+              <article class="report-field">
+                <label for="designProjectName">Project Name</label>
+                <input id="designProjectName" name="designProjectName" type="text" placeholder="Enter project name">
+              </article>
               <article>
                 <span>Date</span>
                 <output id="designReportDate">--</output>
@@ -100,10 +104,11 @@
                 <output id="designReportTime">--</output>
               </article>
               <article>
-                <span>Location</span>
+                <span>Nearest Address</span>
                 <output id="designReportLocation">--</output>
               </article>
             </div>
+            <p class="location-attribution">Nearest address lookup uses OpenStreetMap Nominatim.</p>
             <div class="report-buttons horizontal-buttons">
               <button class="secondary-button" id="loadReportValues" type="button">Refresh Calculator Values</button>
               <button class="print-button" id="printCombinedReport" type="button">Print / Save PDF</button>
