@@ -20,7 +20,7 @@
             <a class="page-link" href="index.html">Water-Cement Calculator</a>
           </div>
           <div class="brand-mark" aria-label="Concrete Everything Share Your Knowledge">
-            <img class="brand-logo" src="./assets/logo.png" alt="">
+            <img class="brand-logo" src="./assets/logo.png" alt="" data-cesyk-logo>
           </div>
         </div>
 
@@ -28,11 +28,8 @@
           <fieldset class="design-panel">
             <legend>Mix Design</legend>
 
-            <label for="agencyName">Agency Name</label>
-            <input id="agencyName" name="agencyName" type="text">
-
-            <label for="testerName">Tester Name</label>
-            <input id="testerName" name="testerName" type="text">
+            <label for="supplierName">Supplier Name</label>
+            <input id="supplierName" name="supplierName" type="text">
 
             <label for="mixDesignNumber">Mix Design Number</label>
             <input id="mixDesignNumber" name="mixDesignNumber" type="text">
@@ -56,6 +53,12 @@
           <fieldset class="design-panel">
             <legend>Test Results</legend>
 
+            <label for="agencyName">Agency Name</label>
+            <input id="agencyName" name="agencyName" type="text">
+
+            <label for="testerName">Tester Name</label>
+            <input id="testerName" name="testerName" type="text">
+
             <label for="testSlump">Test Slump</label>
             <input id="testSlump" name="testSlump" type="number" min="0" step="0.25">
 
@@ -73,8 +76,8 @@
             <h2 id="design-instructions-title">Mix Design and Report Instructions</h2>
           </div>
           <ol>
-            <li>Enter the agency name, tester name, mix design number, and target design values if they are available.</li>
-            <li>Enter any fresh concrete test results provided by a third-party testing agency.</li>
+            <li>Enter the supplier name, mix design number, and target design values if they are available.</li>
+            <li>Enter the agency name, tester name, and any fresh concrete test results provided by a third-party testing agency.</li>
             <li>Open the calculator page first if the water-cement summary needs to be refreshed.</li>
             <li>Print or save the combined report as a PDF.</li>
             <li>Fill in 7 day, 28 day, 56 day, and modulus rupture results in the printed PDF report.</li>
@@ -111,6 +114,7 @@
       </section>
     </main>
 
+    <script src="brand-assets.js"></script>
     <script src="design-testing.js"></script>
   </body>
 </html>

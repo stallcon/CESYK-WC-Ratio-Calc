@@ -224,10 +224,11 @@ function buildCombinedPrintReport() {
   saveReportValues();
   const report = readStoredJson(REPORT_STORAGE_KEY) || {};
   const design = readStoredJson("cesykDesignTestingReport") || {};
+  const logoSrc = typeof CESYK_LOGO_SRC === "string" ? CESYK_LOGO_SRC : "./assets/logo.png";
 
   combinedPrintReport.innerHTML = `
     <header class="print-report-header">
-      <img src="./assets/logo.png" alt="Concrete Everything Share Your Knowledge">
+      <img src="${logoSrc}" alt="Concrete Everything Share Your Knowledge">
       <div>
         <p class="eyebrow dark">CESYK Concrete Tools</p>
         <h1>Water-Cement and Mix Design Report</h1>
@@ -266,8 +267,7 @@ function buildCombinedPrintReport() {
     <section>
       <h2>Mix Design</h2>
       <div class="print-grid">
-        ${reportItem("Agency Name", design.agencyName)}
-        ${reportItem("Tester Name", design.testerName)}
+        ${reportItem("Supplier Name", design.supplierName)}
         ${reportItem("Mix Design Number", design.mixDesignNumber)}
         ${reportItem("Design Water Cement Ratio", design.designWaterCementRatio)}
         ${reportItem("Design Air", design.designAir)}
@@ -280,6 +280,8 @@ function buildCombinedPrintReport() {
     <section>
       <h2>Test Results</h2>
       <div class="print-grid">
+        ${reportItem("Agency Name", design.agencyName)}
+        ${reportItem("Tester Name", design.testerName)}
         ${reportItem("Test Slump", design.testSlump)}
         ${reportItem("Test Air", design.testAir)}
         ${reportItem("Test Unit Weight", design.testUnitWeight)}
