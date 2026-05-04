@@ -77,6 +77,44 @@ body {
   outline: 0;
 }
 
+.language-control {
+  width: min(420px, 100%);
+  min-height: 0;
+  margin: 0 0 18px;
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.language-control select {
+  min-height: 38px;
+  font-size: 0.9rem;
+}
+
+.language-apply {
+  min-height: 38px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: var(--ink);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 850;
+  padding: 0 14px;
+}
+
+.language-apply:hover,
+.language-apply:focus {
+  border-color: var(--accent);
+  background: var(--accent);
+  outline: 0;
+}
+
 .simple-masthead {
   grid-template-columns: minmax(0, 1fr) minmax(120px, 180px);
 }
@@ -571,6 +609,10 @@ article output {
 
   label {
     min-height: 24px;
+  }
+
+  .language-control {
+    grid-template-columns: 1fr;
   }
 
   input,

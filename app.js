@@ -9,8 +9,8 @@ const unitSystems = {
     mass: "lb",
     volume: "yd",
     waterWeightFactor: WATER_WEIGHT_PER_GALLON,
-    waterPerVolumeLabel: "Water Per Yard",
-    cementPerVolumeLabel: "Cement Per Yard",
+    waterPerVolumeLabelKey: "waterPerYard",
+    cementPerVolumeLabelKey: "cementPerYard",
   },
   metric: {
     quantity: "m3",
@@ -19,8 +19,8 @@ const unitSystems = {
     mass: "kg",
     volume: "m3",
     waterWeightFactor: 1,
-    waterPerVolumeLabel: "Water Per Cubic Meter",
-    cementPerVolumeLabel: "Cement Per Cubic Meter",
+    waterPerVolumeLabelKey: "waterPerCubicMeter",
+    cementPerVolumeLabelKey: "cementPerCubicMeter",
   },
 };
 
@@ -68,6 +68,10 @@ const numberFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
 });
 
+function translate(key, fallback = "") {
+  return window.cesykTranslate ? window.cesykTranslate(key, fallback) : fallback || key;
+}
+
 function readNumber(input) {
   const value = Number.parseFloat(input.value);
   return Number.isFinite(value) && value >= 0 ? value : 0;
@@ -99,7 +103,7 @@ function updateReportDateTime() {
 }
 
 function formatCoordinates(latitude, longitude, accuracy) {
-  return `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m accuracy)`;
+  return `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m ${translate("accuracy", "accuracy")})`;
 }
 
 async function findNearestAddress(latitude, longitude) {
@@ -126,12 +130,12 @@ async function findNearestAddress(latitude, longitude) {
 
 function requestLocation() {
   updateReportDateTime();
-  reportLocation.value = "Requesting location...";
+  reportLocation.value = translate("requestingLocation", "Requesting location...");
 
   return new Promise((resolve) => {
     if (!("geolocation" in navigator)) {
       locationLogged = false;
-      reportLocation.value = "Location services unavailable";
+      reportLocation.value = translate("locationUnavailable", "Location services unavailable");
       resolve(false);
       return;
     }
@@ -145,7 +149,10 @@ function requestLocation() {
         updateReportDateTime();
 
         const shouldFindAddress = window.confirm(
-          "To identify the nearest address, this app will send the logged GPS coordinates to OpenStreetMap Nominatim. Continue with nearest address lookup?"
+          translate(
+            "addressLookupPrompt",
+            "To identify the nearest address, this app will send the logged GPS coordinates to OpenStreetMap Nominatim. Continue with nearest address lookup?"
+          )
         );
 
         if (!shouldFindAddress) {
@@ -154,15 +161,15 @@ function requestLocation() {
           return;
         }
 
-        reportLocation.value = "Finding nearest address...";
+        reportLocation.value = translate("findingNearestAddress", "Finding nearest address...");
 
         try {
           const nearestAddress = await findNearestAddress(latitude, longitude);
           reportLocation.value = nearestAddress
             ? `${nearestAddress} | GPS: ${coordinates}`
-            : `${coordinates} | Nearest address unavailable`;
+            : `${coordinates} | ${translate("nearestAddressUnavailable", "Nearest address unavailable")}`;
         } catch {
-          reportLocation.value = `${coordinates} | Nearest address unavailable`;
+          reportLocation.value = `${coordinates} | ${translate("nearestAddressUnavailable", "Nearest address unavailable")}`;
         }
 
         updateReportDateTime();
@@ -173,8 +180,8 @@ function requestLocation() {
         locationLogged = false;
         reportLocation.value =
           error.code === error.PERMISSION_DENIED
-            ? "Location permission denied"
-            : "Location could not be logged";
+            ? translate("locationDenied", "Location permission denied")
+            : translate("locationCouldNotBeLogged", "Location could not be logged");
         resolve(false);
       },
       {
@@ -200,8 +207,8 @@ function updateUnitLabels(system) {
   document.querySelectorAll("[data-unit='water']").forEach((unit) => {
     unit.textContent = system.water;
   });
-  outputs.waterPerVolumeLabel.textContent = system.waterPerVolumeLabel;
-  outputs.cementPerVolumeLabel.textContent = system.cementPerVolumeLabel;
+  outputs.waterPerVolumeLabel.textContent = translate(system.waterPerVolumeLabelKey, "");
+  outputs.cementPerVolumeLabel.textContent = translate(system.cementPerVolumeLabelKey, "");
 }
 
 function calculate() {
@@ -264,7 +271,7 @@ function saveReportValues() {
     report.ticketPhotoDataUrl = "";
     report.ticketPhotoName = "";
     localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
-    ticketPhotoStatus.textContent = "Photo too large for saved PDF";
+    ticketPhotoStatus.textContent = translate("photoTooLarge", "Photo too large for saved PDF");
   }
 }
 
@@ -304,10 +311,10 @@ function ticketPhotoSection(report) {
 
   return `
     <section class="print-ticket-section">
-      <h2>Ticket Photo</h2>
+      <h2>${translate("ticketPhoto", "Ticket Photo")}</h2>
       <figure>
         <img src="${report.ticketPhotoDataUrl}" alt="Attached ticket photo">
-        <figcaption>${escapeHtml(report.ticketPhotoName || "Attached ticket photo")}</figcaption>
+        <figcaption>${escapeHtml(report.ticketPhotoName || translate("attachedTicketPhoto", "Attached ticket photo"))}</figcaption>
       </figure>
     </section>
   `;
@@ -323,75 +330,75 @@ function buildCombinedPrintReport() {
     <header class="print-report-header">
       <img src="${logoSrc}" alt="Concrete Everything Share Your Knowledge">
       <div>
-        <p class="eyebrow dark">CESYK Concrete Tools</p>
-        <h1>Water-Cement and Mix Design Report</h1>
+        <p class="eyebrow dark">${translate("eyebrow", "CESYK Concrete Tools")}</p>
+        <h1>${translate("combinedPrintTitle", "Water-Cement and Mix Design Report")}</h1>
       </div>
     </header>
 
     <section>
-      <h2>Report Details</h2>
+      <h2>${translate("reportDetails", "Report Details")}</h2>
       <div class="print-grid">
-        ${reportItem("Project Name", report.projectName)}
-        ${reportItem("Date", report.date)}
-        ${reportItem("Time", report.time)}
-        ${reportItem("Nearest Address", report.location)}
-        ${reportItem("Address Lookup", "OpenStreetMap Nominatim")}
+        ${reportItem(translate("projectName", "Project Name"), report.projectName)}
+        ${reportItem(translate("date", "Date"), report.date)}
+        ${reportItem(translate("time", "Time"), report.time)}
+        ${reportItem(translate("nearestAddress", "Nearest Address"), report.location)}
+        ${reportItem(translate("addressLookup", "Address Lookup"), translate("addressLookupService", "OpenStreetMap Nominatim"))}
       </div>
     </section>
 
     ${ticketPhotoSection(report)}
 
     <section>
-      <h2>Water-Cement Calculator</h2>
+      <h2>${translate("waterCementCalculator", "Water-Cement Calculator")}</h2>
       <div class="print-grid">
-        ${reportItem("Calculation Units", report.unitSystemLabel)}
-        ${reportItem("Quantity Delivered", report.quantity)}
-        ${reportItem("Cement", report.cement)}
-        ${reportItem("Fly Ash", report.flyAsh)}
-        ${reportItem("Other SCM", report.otherScm)}
-        ${reportItem("Total Cement", report.cementTotal)}
-        ${reportItem("Plant Water", report.plantWater)}
-        ${reportItem("Site Water", report.siteWater)}
-        ${reportItem("Batch Water Weight", report.plantWaterWeight)}
-        ${reportItem("Site Water Weight", report.siteWaterWeight)}
-        ${reportItem("Total Water", report.totalWater)}
-        ${reportItem("Water-Cement Ratio", report.ratio)}
-        ${reportItem("Water Per Volume", report.waterPerVolume)}
-        ${reportItem("Cement Per Volume", report.cementPerVolume)}
+        ${reportItem(translate("calculationUnits", "Calculation Units"), report.unitSystemLabel)}
+        ${reportItem(translate("quantityDelivered", "Quantity Delivered"), report.quantity)}
+        ${reportItem(translate("cement", "Cement"), report.cement)}
+        ${reportItem(translate("flyAsh", "Fly Ash"), report.flyAsh)}
+        ${reportItem(translate("otherScmShort", "Other SCM"), report.otherScm)}
+        ${reportItem(translate("totalCement", "Total Cement"), report.cementTotal)}
+        ${reportItem(translate("plantWater", "Plant Water"), report.plantWater)}
+        ${reportItem(translate("siteWater", "Site Water"), report.siteWater)}
+        ${reportItem(translate("batchWaterWeight", "Batch Water Weight"), report.plantWaterWeight)}
+        ${reportItem(translate("siteWaterWeight", "Site Water Weight"), report.siteWaterWeight)}
+        ${reportItem(translate("totalWater", "Total Water"), report.totalWater)}
+        ${reportItem(translate("waterCementRatio", "Water-Cement Ratio"), report.ratio)}
+        ${reportItem(translate("waterPerVolume", "Water Per Volume"), report.waterPerVolume)}
+        ${reportItem(translate("cementPerVolume", "Cement Per Volume"), report.cementPerVolume)}
       </div>
     </section>
 
     <section>
-      <h2>Mix Design</h2>
+      <h2>${translate("mixDesign", "Mix Design")}</h2>
       <div class="print-grid">
-        ${reportItem("Supplier Name", design.supplierName)}
-        ${reportItem("Mix Design Number", design.mixDesignNumber)}
-        ${reportItem("Design Water Cement Ratio", design.designWaterCementRatio)}
-        ${reportItem("Design Air", design.designAir)}
-        ${reportItem("Design Slump", design.designSlump)}
-        ${reportItem("Design Unit Weight", design.designUnitWeight)}
-        ${reportItem("Design Strength", design.designStrength)}
+        ${reportItem(translate("supplierName", "Supplier Name"), design.supplierName)}
+        ${reportItem(translate("mixDesignNumber", "Mix Design Number"), design.mixDesignNumber)}
+        ${reportItem(translate("designWaterCementRatio", "Design Water Cement Ratio"), design.designWaterCementRatio)}
+        ${reportItem(translate("designAir", "Design Air"), design.designAir)}
+        ${reportItem(translate("designSlump", "Design Slump"), design.designSlump)}
+        ${reportItem(translate("designUnitWeight", "Design Unit Weight"), design.designUnitWeight)}
+        ${reportItem(translate("designStrength", "Design Strength"), design.designStrength)}
       </div>
     </section>
 
     <section>
-      <h2>Test Results</h2>
+      <h2>${translate("testResults", "Test Results")}</h2>
       <div class="print-grid">
-        ${reportItem("Agency Name", design.agencyName)}
-        ${reportItem("Tester Name", design.testerName)}
-        ${reportItem("Test Slump", design.testSlump)}
-        ${reportItem("Test Air", design.testAir)}
-        ${reportItem("Test Unit Weight", design.testUnitWeight)}
+        ${reportItem(translate("agencyName", "Agency Name"), design.agencyName)}
+        ${reportItem(translate("testerName", "Tester Name"), design.testerName)}
+        ${reportItem(translate("testSlump", "Test Slump"), design.testSlump)}
+        ${reportItem(translate("testAir", "Test Air"), design.testAir)}
+        ${reportItem(translate("testUnitWeight", "Test Unit Weight"), design.testUnitWeight)}
       </div>
     </section>
 
     <section>
-      <h2>Strength and Modulus Results</h2>
+      <h2>${translate("strengthAndModulus", "Strength and Modulus Results")}</h2>
       <div class="print-grid print-fill-grid">
-        ${reportInput("7 Day Break")}
-        ${reportInput("28 Day Break")}
-        ${reportInput("56 Day Break")}
-        ${reportInput("Modulus Rupture Results")}
+        ${reportInput(translate("sevenDayBreak", "7 Day Break"))}
+        ${reportInput(translate("twentyEightDayBreak", "28 Day Break"))}
+        ${reportInput(translate("fiftySixDayBreak", "56 Day Break"))}
+        ${reportInput(translate("modulusRuptureResults", "Modulus Rupture Results"))}
       </div>
     </section>
   `;
@@ -439,6 +446,15 @@ Object.values(fields).forEach((field) => {
 
 projectNameInput.addEventListener("input", saveReportValues);
 
+window.addEventListener("cesyk-language-change", () => {
+  if (!ticketPhotoAttached) {
+    ticketPhotoStatus.textContent = translate("takeOrAttachPhoto", "Take or attach photo");
+    ticketPreview.innerHTML = `<span>${translate("noTicketPhoto", "No ticket photo attached")}</span>`;
+  }
+  calculate();
+  saveReportValues();
+});
+
 ticketPhotoInput.addEventListener("change", async () => {
   const [file] = ticketPhotoInput.files;
   ticketPhotoAttached = Boolean(file);
@@ -451,14 +467,14 @@ ticketPhotoInput.addEventListener("change", async () => {
   if (!file) {
     ticketPhotoDataUrl = "";
     ticketPhotoName = "";
-    ticketPhotoStatus.textContent = "Take or attach photo";
-    ticketPreview.innerHTML = "<span>No ticket photo attached</span>";
+    ticketPhotoStatus.textContent = translate("takeOrAttachPhoto", "Take or attach photo");
+    ticketPreview.innerHTML = `<span>${translate("noTicketPhoto", "No ticket photo attached")}</span>`;
     saveReportValues();
     return;
   }
 
   ticketPhotoUrl = URL.createObjectURL(file);
-  ticketPhotoName = file.name || "Ticket photo attached";
+  ticketPhotoName = file.name || translate("ticketPhotoAttached", "Ticket photo attached");
   ticketPhotoStatus.textContent = ticketPhotoName;
   ticketPreview.innerHTML = `<img src="${ticketPhotoUrl}" alt="Attached ticket photo">`;
 
@@ -468,7 +484,7 @@ ticketPhotoInput.addEventListener("change", async () => {
     saveReportValues();
   } catch {
     ticketPhotoDataUrl = "";
-    ticketPhotoStatus.textContent = "Photo could not be added to PDF";
+    ticketPhotoStatus.textContent = translate("photoCouldNotBeAdded", "Photo could not be added to PDF");
     saveReportValues();
   }
 });
@@ -488,7 +504,10 @@ printReportButton.addEventListener("click", async () => {
 
   if (!ticketPhotoAttached) {
     const shouldContinue = window.confirm(
-      "Please take or attach a photo of the ticket before saving the report. Continue to print without a ticket photo?"
+      translate(
+        "missingTicketPrompt",
+        "Please take or attach a photo of the ticket before saving the report. Continue to print without a ticket photo?"
+      )
     );
 
     if (!shouldContinue) {
@@ -514,7 +533,7 @@ if (savedReport.projectName) {
 if (savedReport.ticketPhotoDataUrl) {
   ticketPhotoAttached = true;
   ticketPhotoDataUrl = savedReport.ticketPhotoDataUrl;
-  ticketPhotoName = savedReport.ticketPhotoName || "Saved ticket photo";
+  ticketPhotoName = savedReport.ticketPhotoName || translate("attachedTicketPhoto", "Attached ticket photo");
   ticketPhotoStatus.textContent = ticketPhotoName;
   ticketPreview.innerHTML = `<img src="${ticketPhotoDataUrl}" alt="Attached ticket photo">`;
 }

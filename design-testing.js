@@ -10,6 +10,10 @@ const loadReportValues = document.querySelector("#loadReportValues");
 const designFields = [...document.querySelectorAll("#designForm input")];
 const combinedPrintReport = document.querySelector("#combinedPrintReport");
 
+function translate(key, fallback = "") {
+  return window.cesykTranslate ? window.cesykTranslate(key, fallback) : fallback || key;
+}
+
 function readStoredJson(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || "null");
@@ -80,10 +84,10 @@ function ticketPhotoSection(report) {
 
   return `
     <section class="print-ticket-section">
-      <h2>Ticket Photo</h2>
+      <h2>${translate("ticketPhoto", "Ticket Photo")}</h2>
       <figure>
         <img src="${report.ticketPhotoDataUrl}" alt="Attached ticket photo">
-        <figcaption>${escapeHtml(report.ticketPhotoName || "Attached ticket photo")}</figcaption>
+        <figcaption>${escapeHtml(report.ticketPhotoName || translate("attachedTicketPhoto", "Attached ticket photo"))}</figcaption>
       </figure>
     </section>
   `;
@@ -122,75 +126,75 @@ function buildCombinedPrintReport() {
     <header class="print-report-header">
       <img src="${logoSrc}" alt="Concrete Everything Share Your Knowledge">
       <div>
-        <p class="eyebrow dark">CESYK Concrete Tools</p>
-        <h1>Water-Cement and Mix Design Report</h1>
+        <p class="eyebrow dark">${translate("eyebrow", "CESYK Concrete Tools")}</p>
+        <h1>${translate("combinedPrintTitle", "Water-Cement and Mix Design Report")}</h1>
       </div>
     </header>
 
     <section>
-      <h2>Report Details</h2>
+      <h2>${translate("reportDetails", "Report Details")}</h2>
       <div class="print-grid">
-        ${article("Project Name", report.projectName)}
-        ${article("Date", designReportDate.value || report.date)}
-        ${article("Time", designReportTime.value || report.time)}
-        ${article("Nearest Address", designReportLocation.value || report.location)}
-        ${article("Address Lookup", "OpenStreetMap Nominatim")}
+        ${article(translate("projectName", "Project Name"), report.projectName)}
+        ${article(translate("date", "Date"), designReportDate.value || report.date)}
+        ${article(translate("time", "Time"), designReportTime.value || report.time)}
+        ${article(translate("nearestAddress", "Nearest Address"), designReportLocation.value || report.location)}
+        ${article(translate("addressLookup", "Address Lookup"), translate("addressLookupService", "OpenStreetMap Nominatim"))}
       </div>
     </section>
 
     ${ticketPhotoSection(report)}
 
     <section>
-      <h2>Water-Cement Calculator</h2>
+      <h2>${translate("waterCementCalculator", "Water-Cement Calculator")}</h2>
       <div class="print-grid">
-        ${article("Calculation Units", report.unitSystemLabel)}
-        ${article("Quantity Delivered", report.quantity)}
-        ${article("Cement", report.cement)}
-        ${article("Fly Ash", report.flyAsh)}
-        ${article("Other SCM", report.otherScm)}
-        ${article("Total Cement", report.cementTotal)}
-        ${article("Plant Water", report.plantWater)}
-        ${article("Site Water", report.siteWater)}
-        ${article("Batch Water Weight", report.plantWaterWeight)}
-        ${article("Site Water Weight", report.siteWaterWeight)}
-        ${article("Total Water", report.totalWater)}
-        ${article("Water-Cement Ratio", report.ratio)}
-        ${article("Water Per Volume", report.waterPerVolume)}
-        ${article("Cement Per Volume", report.cementPerVolume)}
+        ${article(translate("calculationUnits", "Calculation Units"), report.unitSystemLabel)}
+        ${article(translate("quantityDelivered", "Quantity Delivered"), report.quantity)}
+        ${article(translate("cement", "Cement"), report.cement)}
+        ${article(translate("flyAsh", "Fly Ash"), report.flyAsh)}
+        ${article(translate("otherScmShort", "Other SCM"), report.otherScm)}
+        ${article(translate("totalCement", "Total Cement"), report.cementTotal)}
+        ${article(translate("plantWater", "Plant Water"), report.plantWater)}
+        ${article(translate("siteWater", "Site Water"), report.siteWater)}
+        ${article(translate("batchWaterWeight", "Batch Water Weight"), report.plantWaterWeight)}
+        ${article(translate("siteWaterWeight", "Site Water Weight"), report.siteWaterWeight)}
+        ${article(translate("totalWater", "Total Water"), report.totalWater)}
+        ${article(translate("waterCementRatio", "Water-Cement Ratio"), report.ratio)}
+        ${article(translate("waterPerVolume", "Water Per Volume"), report.waterPerVolume)}
+        ${article(translate("cementPerVolume", "Cement Per Volume"), report.cementPerVolume)}
       </div>
     </section>
 
     <section>
-      <h2>Mix Design</h2>
+      <h2>${translate("mixDesign", "Mix Design")}</h2>
       <div class="print-grid">
-        ${article("Supplier Name", design.supplierName)}
-        ${article("Mix Design Number", design.mixDesignNumber)}
-        ${article("Design Water Cement Ratio", design.designWaterCementRatio)}
-        ${article("Design Air", design.designAir)}
-        ${article("Design Slump", design.designSlump)}
-        ${article("Design Unit Weight", design.designUnitWeight)}
-        ${article("Design Strength", design.designStrength)}
+        ${article(translate("supplierName", "Supplier Name"), design.supplierName)}
+        ${article(translate("mixDesignNumber", "Mix Design Number"), design.mixDesignNumber)}
+        ${article(translate("designWaterCementRatio", "Design Water Cement Ratio"), design.designWaterCementRatio)}
+        ${article(translate("designAir", "Design Air"), design.designAir)}
+        ${article(translate("designSlump", "Design Slump"), design.designSlump)}
+        ${article(translate("designUnitWeight", "Design Unit Weight"), design.designUnitWeight)}
+        ${article(translate("designStrength", "Design Strength"), design.designStrength)}
       </div>
     </section>
 
     <section>
-      <h2>Test Results</h2>
+      <h2>${translate("testResults", "Test Results")}</h2>
       <div class="print-grid">
-        ${article("Agency Name", design.agencyName)}
-        ${article("Tester Name", design.testerName)}
-        ${article("Test Slump", design.testSlump)}
-        ${article("Test Air", design.testAir)}
-        ${article("Test Unit Weight", design.testUnitWeight)}
+        ${article(translate("agencyName", "Agency Name"), design.agencyName)}
+        ${article(translate("testerName", "Tester Name"), design.testerName)}
+        ${article(translate("testSlump", "Test Slump"), design.testSlump)}
+        ${article(translate("testAir", "Test Air"), design.testAir)}
+        ${article(translate("testUnitWeight", "Test Unit Weight"), design.testUnitWeight)}
       </div>
     </section>
 
     <section>
-      <h2>Strength and Modulus Results</h2>
+      <h2>${translate("strengthAndModulus", "Strength and Modulus Results")}</h2>
       <div class="print-grid print-fill-grid">
-        ${reportInput("7 Day Break")}
-        ${reportInput("28 Day Break")}
-        ${reportInput("56 Day Break")}
-        ${reportInput("Modulus Rupture Results")}
+        ${reportInput(translate("sevenDayBreak", "7 Day Break"))}
+        ${reportInput(translate("twentyEightDayBreak", "28 Day Break"))}
+        ${reportInput(translate("fiftySixDayBreak", "56 Day Break"))}
+        ${reportInput(translate("modulusRuptureResults", "Modulus Rupture Results"))}
       </div>
     </section>
   `;

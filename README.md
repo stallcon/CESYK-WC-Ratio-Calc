@@ -6,6 +6,7 @@ A free, public, dependency-free web version of the original Excel water-cement r
 
 - Runs directly in the browser
 - No build step, install, backend, database, or paid software required
+- Includes a language selector with English, Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Portuguese, Russian, and Urdu
 - Supports US Customary and Metric inputs
 - Allows users to attach a ticket photo and include it in the PDF report
 - Logs report date, time, and browser-provided location
@@ -39,6 +40,7 @@ The app uses browser location services to log coordinates. If the user approves 
 - `index.html`: page structure
 - `design-testing.html`: combined mix design and report page
 - `styles.css`: professional white, black, and red app styling
+- `i18n.js`: interface translations, saved language selection, and language-link handling
 - `app.js`: calculator logic, unit switching, ticket photo preview, location logging, and print action
 - `design-testing.js`: saved calculator summary, design/test inputs, and combined report printing
 - `brand-assets.js`: embedded CESYK logo source used when the hosted page cannot load the image file directly
