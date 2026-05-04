@@ -44,6 +44,18 @@ const outputs = {
   cementPerVolumeLabel: document.querySelector("#cementPerVolumeLabel"),
 };
 
+const ticketPhotoInput = document.querySelector("#ticketPhoto");
+const ticketPhotoStatus = document.querySelector("#ticketPhotoStatus");
+const ticketPreview = document.querySelector("#ticketPreview");
+const printReportButton = document.querySelector("#printReport");
+const logLocationButton = document.querySelector("#logLocation");
+const reportDate = document.querySelector("#reportDate");
+const reportTime = document.querySelector("#reportTime");
+const reportLocation = document.querySelector("#reportLocation");
+let ticketPhotoAttached = false;
+let ticketPhotoUrl = "";
+let locationLogged = false;
+
 const numberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   minimumFractionDigits: 2,
@@ -60,6 +72,60 @@ function formatWeight(value, unit) {
 
 function formatPerVolume(value, massUnit, volumeUnit) {
   return `${numberFormatter.format(value)} ${massUnit}/${volumeUnit}`;
+}
+
+function updateReportDateTime() {
+  const now = new Date();
+
+  reportDate.value = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(now);
+
+  reportTime.value = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZoneName: "short",
+  }).format(now);
+}
+
+function requestLocation() {
+  updateReportDateTime();
+  reportLocation.value = "Requesting location...";
+
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) {
+      locationLogged = false;
+      reportLocation.value = "Location services unavailable";
+      resolve(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+        locationLogged = true;
+        reportLocation.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m accuracy)`;
+        updateReportDateTime();
+        resolve(true);
+      },
+      (error) => {
+        locationLogged = false;
+        reportLocation.value =
+          error.code === error.PERMISSION_DENIED
+            ? "Location permission denied"
+            : "Location could not be logged";
+        resolve(false);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 60000,
+        timeout: 10000,
+      }
+    );
+  });
 }
 
 function getUnitSystem() {
@@ -110,4 +176,53 @@ Object.values(fields).forEach((field) => {
   field.addEventListener("change", calculate);
 });
 
+ticketPhotoInput.addEventListener("change", () => {
+  const [file] = ticketPhotoInput.files;
+  ticketPhotoAttached = Boolean(file);
+
+  if (ticketPhotoUrl) {
+    URL.revokeObjectURL(ticketPhotoUrl);
+    ticketPhotoUrl = "";
+  }
+
+  if (!file) {
+    ticketPhotoStatus.textContent = "Take or attach photo";
+    ticketPreview.innerHTML = "<span>No ticket photo attached</span>";
+    return;
+  }
+
+  ticketPhotoUrl = URL.createObjectURL(file);
+  ticketPhotoStatus.textContent = file.name || "Ticket photo attached";
+  ticketPreview.innerHTML = `<img src="${ticketPhotoUrl}" alt="Attached ticket photo">`;
+});
+
+logLocationButton.addEventListener("click", () => {
+  requestLocation();
+});
+
+printReportButton.addEventListener("click", async () => {
+  updateReportDateTime();
+
+  if (!ticketPhotoAttached) {
+    const shouldContinue = window.confirm(
+      "Please take or attach a photo of the ticket before saving the report. Continue to print without a ticket photo?"
+    );
+
+    if (!shouldContinue) {
+      ticketPhotoInput.click();
+      return;
+    }
+  }
+
+  if (!locationLogged) {
+    await requestLocation();
+  }
+
+  window.print();
+});
+
+window.addEventListener("beforeprint", updateReportDateTime);
+
+updateReportDateTime();
+requestLocation();
 calculate();

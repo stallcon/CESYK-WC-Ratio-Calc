@@ -5,6 +5,7 @@ node_modules/
 tools/
 
 # Runtime logs and temporary output
+dist/
 *.log
 *.tmp
 *.temp

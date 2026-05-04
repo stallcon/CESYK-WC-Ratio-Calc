@@ -96,6 +96,58 @@
             </div>
           </section>
         </form>
+
+        <section class="report-actions" aria-labelledby="report-title">
+          <div>
+            <p class="eyebrow dark">Report</p>
+            <h2 id="report-title">Report Details and PDF</h2>
+          </div>
+          <div class="report-content">
+            <div class="report-meta">
+              <article>
+                <span>Date</span>
+                <output id="reportDate">--</output>
+              </article>
+              <article>
+                <span>Time</span>
+                <output id="reportTime">--</output>
+              </article>
+              <article>
+                <span>Location</span>
+                <output id="reportLocation">Requesting location...</output>
+              </article>
+            </div>
+            <div class="report-tools">
+              <label class="photo-control" for="ticketPhoto">
+                <span>Ticket Photo</span>
+                <strong id="ticketPhotoStatus">Take or attach photo</strong>
+              </label>
+              <input id="ticketPhoto" type="file" accept="image/*" capture="environment">
+              <div class="ticket-preview" id="ticketPreview" aria-live="polite">
+                <span>No ticket photo attached</span>
+              </div>
+              <div class="report-buttons">
+                <button class="secondary-button" id="logLocation" type="button">Log Location</button>
+                <button class="print-button" id="printReport" type="button">Print / Save PDF</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="instructions" aria-labelledby="instructions-title">
+          <div>
+            <p class="eyebrow dark">Step-by-Step</p>
+            <h2 id="instructions-title">How to Use the Calculator</h2>
+          </div>
+          <ol>
+            <li>Select US Customary or Metric from the Calculation Units dropdown.</li>
+            <li>Enter the quantity delivered for the concrete load.</li>
+            <li>Enter the total Cement + Fly Ash amount.</li>
+            <li>Enter plant water and any additional site water.</li>
+            <li>Review the Water-Cement Ratio and Mix Summary values.</li>
+            <li>Attach the ticket photo, confirm the logged location, then print or save the report as a PDF.</li>
+          </ol>
+        </section>
       </section>
     </main>
 

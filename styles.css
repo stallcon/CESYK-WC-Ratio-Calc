@@ -199,6 +199,185 @@ select:focus {
   background: var(--surface);
 }
 
+.report-actions {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 28px;
+  padding: 28px 32px 32px;
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.report-actions h2 {
+  margin-bottom: 0;
+}
+
+.report-content {
+  display: grid;
+  gap: 14px;
+}
+
+.report-meta,
+.report-tools {
+  display: grid;
+  gap: 14px;
+}
+
+.report-meta {
+  grid-template-columns: minmax(150px, 0.45fr) minmax(170px, 0.45fr) minmax(260px, 1.1fr);
+}
+
+.report-meta article {
+  min-height: 86px;
+}
+
+.report-meta output {
+  font-size: 1rem;
+}
+
+.report-tools {
+  grid-template-columns: minmax(220px, 0.8fr) minmax(240px, 1fr) auto;
+  align-items: stretch;
+}
+
+.photo-control {
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid #e2e5e8;
+  border-radius: 6px;
+  display: grid;
+  align-content: space-between;
+  background: #fbfcfd;
+  cursor: pointer;
+}
+
+.photo-control span,
+.ticket-preview span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.photo-control strong {
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+#ticketPhoto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ticket-preview {
+  min-height: 92px;
+  border: 1px dashed #cfd7df;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.ticket-preview img {
+  width: 100%;
+  height: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  display: block;
+  background: #ffffff;
+}
+
+.report-buttons {
+  display: grid;
+  gap: 10px;
+  align-self: center;
+}
+
+.print-button,
+.secondary-button {
+  min-width: 154px;
+  min-height: 46px;
+  border: 0;
+  border-radius: 6px;
+  align-self: center;
+  background: var(--ink);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 850;
+  padding: 0 18px;
+}
+
+.secondary-button {
+  border: 1px solid #cfd7df;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.print-button:focus,
+.print-button:hover,
+.secondary-button:focus,
+.secondary-button:hover {
+  background: var(--accent);
+  color: #ffffff;
+  outline: 0;
+}
+
+.instructions {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 28px;
+  padding: 28px 32px 32px;
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.instructions h2 {
+  margin-bottom: 0;
+}
+
+.instructions ol {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  counter-reset: instruction-step;
+  list-style: none;
+}
+
+.instructions li {
+  min-height: 126px;
+  padding: 16px;
+  border: 1px solid #e2e5e8;
+  border-radius: 6px;
+  background: #fbfcfd;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 680;
+  line-height: 1.35;
+}
+
+.instructions li::before {
+  counter-increment: instruction-step;
+  content: counter(instruction-step);
+  width: 28px;
+  height: 28px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
 .result-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -269,5 +448,66 @@ article output {
 
   .result-grid {
     grid-template-columns: 1fr;
+  }
+
+  .report-actions {
+    grid-template-columns: 1fr;
+    padding: 24px 22px;
+  }
+
+  .report-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .report-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .print-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .instructions {
+    grid-template-columns: 1fr;
+    padding: 24px 22px;
+  }
+
+  .instructions ol {
+    grid-template-columns: 1fr;
+  }
+
+  .instructions li {
+    min-height: 0;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .app-shell {
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .workspace {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .print-button,
+  .secondary-button,
+  .instructions {
+    display: none;
+  }
+
+  .masthead,
+  fieldset,
+  .results-panel,
+  .report-actions {
+    padding: 18px 0;
   }
 }

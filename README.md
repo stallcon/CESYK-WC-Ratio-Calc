@@ -7,6 +7,9 @@ A free, public, dependency-free web version of the original Excel water-cement r
 - Runs directly in the browser
 - No build step, install, backend, database, or paid software required
 - Supports US Customary and Metric inputs
+- Allows users to attach a ticket photo to the report
+- Logs report date, time, and browser-provided location
+- Includes a Print / Save PDF report action
 - Ready for GitHub Pages or any static web host
 
 ## Open the app
@@ -28,7 +31,7 @@ You can also publish without Actions by setting `Source` to `Deploy from a branc
 
 - `index.html`: page structure
 - `styles.css`: professional white, black, and red app styling
-- `app.js`: calculator logic and unit switching
+- `app.js`: calculator logic, unit switching, ticket photo preview, location logging, and print action
 - `README.md`: project and publishing instructions
 - `LICENSE`: MIT license
 - `.nojekyll`: tells GitHub Pages to serve files directly
