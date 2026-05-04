@@ -1,5 +1,5 @@
 const WATER_WEIGHT_PER_GALLON = 8.333;
-const CEMENT_FACTOR = 0.32;
+const REPORT_STORAGE_KEY = "cesykWaterCementReport";
 
 const unitSystems = {
   imperial: {
@@ -28,13 +28,15 @@ const fields = {
   unitSystem: document.querySelector("#unitSystem"),
   quantity: document.querySelector("#quantity"),
   cement: document.querySelector("#cement"),
+  flyAsh: document.querySelector("#flyAsh"),
+  otherScm: document.querySelector("#otherScm"),
   plantWater: document.querySelector("#plantWater"),
   siteWater: document.querySelector("#siteWater"),
 };
 
 const outputs = {
   ratio: document.querySelector("#ratio"),
-  cementFactor: document.querySelector("#cementFactor"),
+  cementTotal: document.querySelector("#cementTotal"),
   plantWaterWeight: document.querySelector("#plantWaterWeight"),
   siteWaterWeight: document.querySelector("#siteWaterWeight"),
   totalWater: document.querySelector("#totalWater"),
@@ -49,9 +51,11 @@ const ticketPhotoStatus = document.querySelector("#ticketPhotoStatus");
 const ticketPreview = document.querySelector("#ticketPreview");
 const printReportButton = document.querySelector("#printReport");
 const logLocationButton = document.querySelector("#logLocation");
+const designTestingLink = document.querySelector("#designTestingLink");
 const reportDate = document.querySelector("#reportDate");
 const reportTime = document.querySelector("#reportTime");
 const reportLocation = document.querySelector("#reportLocation");
+const combinedPrintReport = document.querySelector("#combinedPrintReport");
 let ticketPhotoAttached = false;
 let ticketPhotoUrl = "";
 let locationLogged = false;
@@ -109,6 +113,7 @@ function requestLocation() {
         locationLogged = true;
         reportLocation.value = `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${Math.round(accuracy)} m accuracy)`;
         updateReportDateTime();
+        saveReportValues();
         resolve(true);
       },
       (error) => {
@@ -150,25 +155,145 @@ function calculate() {
   const system = getUnitSystem();
   const quantity = readNumber(fields.quantity);
   const cement = readNumber(fields.cement);
+  const flyAsh = readNumber(fields.flyAsh);
+  const otherScm = readNumber(fields.otherScm);
   const plantWater = readNumber(fields.plantWater);
   const siteWater = readNumber(fields.siteWater);
 
-  const cementFactor = cement * CEMENT_FACTOR;
+  const cementTotal = cement + flyAsh + otherScm;
   const plantWaterWeight = plantWater * system.waterWeightFactor;
   const siteWaterWeight = siteWater * system.waterWeightFactor;
   const totalWater = plantWaterWeight + siteWaterWeight;
-  const ratio = cement > 0 ? totalWater / cement : 0;
+  const ratio = cementTotal > 0 ? totalWater / cementTotal : 0;
   const waterPerYard = quantity > 0 ? totalWater / quantity : 0;
-  const cementPerYard = quantity > 0 ? cement / quantity : 0;
+  const cementPerYard = quantity > 0 ? cementTotal / quantity : 0;
 
   updateUnitLabels(system);
   outputs.ratio.value = ratio.toFixed(3);
-  outputs.cementFactor.value = formatWeight(cementFactor, system.mass);
+  outputs.cementTotal.value = formatWeight(cementTotal, system.mass);
   outputs.plantWaterWeight.value = formatWeight(plantWaterWeight, system.mass);
   outputs.siteWaterWeight.value = formatWeight(siteWaterWeight, system.mass);
   outputs.totalWater.value = formatWeight(totalWater, system.mass);
   outputs.waterPerYard.value = formatPerVolume(waterPerYard, system.mass, system.volume);
   outputs.cementPerYard.value = formatPerVolume(cementPerYard, system.mass, system.volume);
+  saveReportValues();
+}
+
+function saveReportValues() {
+  const report = {
+    unitSystem: fields.unitSystem.value,
+    unitSystemLabel: fields.unitSystem.options[fields.unitSystem.selectedIndex]?.text || "",
+    date: reportDate.value,
+    time: reportTime.value,
+    location: reportLocation.value,
+    ratio: outputs.ratio.value,
+    quantity: `${readNumber(fields.quantity)} ${getUnitSystem().quantity}`,
+    cement: formatWeight(readNumber(fields.cement), getUnitSystem().mass),
+    flyAsh: formatWeight(readNumber(fields.flyAsh), getUnitSystem().mass),
+    otherScm: formatWeight(readNumber(fields.otherScm), getUnitSystem().mass),
+    cementTotal: outputs.cementTotal.value,
+    plantWater: `${readNumber(fields.plantWater)} ${getUnitSystem().water}`,
+    siteWater: `${readNumber(fields.siteWater)} ${getUnitSystem().water}`,
+    plantWaterWeight: outputs.plantWaterWeight.value,
+    siteWaterWeight: outputs.siteWaterWeight.value,
+    totalWater: outputs.totalWater.value,
+    waterPerVolume: outputs.waterPerYard.value,
+    cementPerVolume: outputs.cementPerYard.value,
+  };
+
+  localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(report));
+}
+
+function readStoredJson(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function reportItem(label, value) {
+  return `<article><span>${label}</span><strong>${value || "--"}</strong></article>`;
+}
+
+function reportInput(label) {
+  return `<article class="print-fill-field"><span>${label}</span><div></div></article>`;
+}
+
+function buildCombinedPrintReport() {
+  saveReportValues();
+  const report = readStoredJson(REPORT_STORAGE_KEY) || {};
+  const design = readStoredJson("cesykDesignTestingReport") || {};
+
+  combinedPrintReport.innerHTML = `
+    <header class="print-report-header">
+      <img src="assets/logo.png" alt="Concrete Everything Share Your Knowledge">
+      <div>
+        <p class="eyebrow dark">CESYK Concrete Tools</p>
+        <h1>Water-Cement, Design, and Testing Report</h1>
+      </div>
+    </header>
+
+    <section>
+      <h2>Report Details</h2>
+      <div class="print-grid">
+        ${reportItem("Date", report.date)}
+        ${reportItem("Time", report.time)}
+        ${reportItem("Location", report.location)}
+      </div>
+    </section>
+
+    <section>
+      <h2>Water-Cement Calculator</h2>
+      <div class="print-grid">
+        ${reportItem("Calculation Units", report.unitSystemLabel)}
+        ${reportItem("Quantity Delivered", report.quantity)}
+        ${reportItem("Cement", report.cement)}
+        ${reportItem("Fly Ash", report.flyAsh)}
+        ${reportItem("Other SCM", report.otherScm)}
+        ${reportItem("Total Cement", report.cementTotal)}
+        ${reportItem("Plant Water", report.plantWater)}
+        ${reportItem("Site Water", report.siteWater)}
+        ${reportItem("Batch Water Weight", report.plantWaterWeight)}
+        ${reportItem("Site Water Weight", report.siteWaterWeight)}
+        ${reportItem("Total Water", report.totalWater)}
+        ${reportItem("Water-Cement Ratio", report.ratio)}
+        ${reportItem("Water Per Volume", report.waterPerVolume)}
+        ${reportItem("Cement Per Volume", report.cementPerVolume)}
+      </div>
+    </section>
+
+    <section>
+      <h2>Mix Design</h2>
+      <div class="print-grid">
+        ${reportItem("Mix Design Number", design.mixDesignNumber)}
+        ${reportItem("Design Water Cement Ratio", design.designWaterCementRatio)}
+        ${reportItem("Design Air", design.designAir)}
+        ${reportItem("Design Slump", design.designSlump)}
+        ${reportItem("Design Unit Weight", design.designUnitWeight)}
+        ${reportItem("Design Strength", design.designStrength)}
+      </div>
+    </section>
+
+    <section>
+      <h2>Test Results</h2>
+      <div class="print-grid">
+        ${reportItem("Test Slump", design.testSlump)}
+        ${reportItem("Test Air", design.testAir)}
+        ${reportItem("Test Unit Weight", design.testUnitWeight)}
+      </div>
+    </section>
+
+    <section>
+      <h2>Strength and Modulus Results</h2>
+      <div class="print-grid print-fill-grid">
+        ${reportInput("7 Day Break")}
+        ${reportInput("28 Day Break")}
+        ${reportInput("56 Day Break")}
+        ${reportInput("Modulus Rupture Results")}
+      </div>
+    </section>
+  `;
 }
 
 Object.values(fields).forEach((field) => {
@@ -200,8 +325,14 @@ logLocationButton.addEventListener("click", () => {
   requestLocation();
 });
 
+designTestingLink.addEventListener("click", () => {
+  updateReportDateTime();
+  saveReportValues();
+});
+
 printReportButton.addEventListener("click", async () => {
   updateReportDateTime();
+  saveReportValues();
 
   if (!ticketPhotoAttached) {
     const shouldContinue = window.confirm(
@@ -218,10 +349,13 @@ printReportButton.addEventListener("click", async () => {
     await requestLocation();
   }
 
+  buildCombinedPrintReport();
   window.print();
 });
 
 window.addEventListener("beforeprint", updateReportDateTime);
+window.addEventListener("beforeprint", saveReportValues);
+window.addEventListener("beforeprint", buildCombinedPrintReport);
 
 updateReportDateTime();
 requestLocation();

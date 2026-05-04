@@ -17,7 +17,13 @@
           <div>
             <p class="eyebrow">CESYK Concrete Tools</p>
             <h1 id="app-title">CESYK Water Cement Ratio Calculator</h1>
+            <a class="page-link" id="designTestingLink" href="design-testing.html">Design and Testing</a>
           </div>
+          <img
+            class="brand-logo"
+            src="assets/logo.png"
+            alt="Concrete Everything Share Your Knowledge"
+          >
           <div class="ratio-meter" aria-live="polite">
             <span class="ratio-label">Water-Cement Ratio</span>
             <output id="ratio">0.000</output>
@@ -43,10 +49,22 @@
             <input id="quantity" name="quantity" type="number" min="0" step="0.01" value="10">
 
             <label for="cement">
-              <span>Cement + Fly Ash</span>
+              <span>Cement</span>
               <span class="unit" data-unit="cement">lbs</span>
             </label>
             <input id="cement" name="cement" type="number" min="0" step="0.01" value="5640">
+
+            <label for="flyAsh">
+              <span>Fly Ash</span>
+              <span class="unit" data-unit="cement">lbs</span>
+            </label>
+            <input id="flyAsh" name="flyAsh" type="number" min="0" step="0.01" value="0">
+
+            <label for="otherScm">
+              <span>Other Supplementary Cement Material</span>
+              <span class="unit" data-unit="cement">lbs</span>
+            </label>
+            <input id="otherScm" name="otherScm" type="number" min="0" step="0.01" value="0">
 
             <label for="plantWater">
               <span>Plant Water</span>
@@ -70,11 +88,11 @@
             </div>
             <div class="result-grid">
               <article>
-                <span>Cement Factor</span>
-                <output id="cementFactor">1,804.80 lb</output>
+                <span>Cement</span>
+                <output id="cementTotal">5,640.00 lb</output>
               </article>
               <article>
-                <span>Plant Water Weight</span>
+                <span>Batch Water Weight</span>
                 <output id="plantWaterWeight">2,441.57 lb</output>
               </article>
               <article>
@@ -142,12 +160,14 @@
           <ol>
             <li>Select US Customary or Metric from the Calculation Units dropdown.</li>
             <li>Enter the quantity delivered for the concrete load.</li>
-            <li>Enter the total Cement + Fly Ash amount.</li>
+            <li>Enter cement, fly ash, and other supplementary cement material.</li>
             <li>Enter plant water and any additional site water.</li>
             <li>Review the Water-Cement Ratio and Mix Summary values.</li>
-            <li>Attach the ticket photo, confirm the logged location, then print or save the report as a PDF.</li>
+            <li>Attach the ticket photo for the report record.</li>
+            <li>Confirm the logged location, then print or save the report as a PDF.</li>
           </ol>
         </section>
+        <section class="print-report-document" id="combinedPrintReport" aria-label="Combined printable report"></section>
       </section>
     </main>
 

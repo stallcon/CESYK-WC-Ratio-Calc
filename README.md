@@ -9,6 +9,7 @@ A free, public, dependency-free web version of the original Excel water-cement r
 - Supports US Customary and Metric inputs
 - Allows users to attach a ticket photo to the report
 - Logs report date, time, and browser-provided location
+- Includes a Design and Testing page for mix design, test results, and break result fields
 - Includes a Print / Save PDF report action
 - Ready for GitHub Pages or any static web host
 
@@ -30,8 +31,11 @@ You can also publish without Actions by setting `Source` to `Deploy from a branc
 ## Project Files
 
 - `index.html`: page structure
+- `design-testing.html`: combined design and testing report page
 - `styles.css`: professional white, black, and red app styling
 - `app.js`: calculator logic, unit switching, ticket photo preview, location logging, and print action
+- `design-testing.js`: saved calculator summary, design/test inputs, and combined report printing
+- `assets/logo.png`: CESYK logo used for app branding and printed reports
 - `README.md`: project and publishing instructions
 - `LICENSE`: MIT license
 - `.nojekyll`: tells GitHub Pages to serve files directly

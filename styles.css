@@ -44,7 +44,7 @@ body {
 
 .masthead {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 250px;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 180px) 250px;
   justify-content: space-between;
   gap: 24px;
   align-items: center;
@@ -52,6 +52,42 @@ body {
   background: #ffffff;
   color: var(--ink);
   border-bottom: 1px solid var(--line);
+}
+
+.page-link {
+  width: fit-content;
+  margin-top: 18px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 16px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.page-link:hover,
+.page-link:focus {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  outline: 0;
+}
+
+.simple-masthead {
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 180px);
+}
+
+.brand-logo {
+  width: min(100%, 150px);
+  max-height: 150px;
+  border-radius: 6px;
+  object-fit: contain;
+  justify-self: end;
+  background: #3f3a3a;
 }
 
 .eyebrow {
@@ -160,6 +196,49 @@ label {
   font-weight: 700;
 }
 
+.combined-report,
+.design-form {
+  padding: 30px 32px;
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.combined-report {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 28px;
+}
+
+.design-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.design-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 0;
+}
+
+.design-panel label {
+  min-height: 0;
+}
+
+.design-panel input {
+  text-align: left;
+}
+
+.break-panel input {
+  min-height: 54px;
+}
+
+.horizontal-buttons {
+  grid-template-columns: repeat(2, max-content);
+  justify-content: end;
+}
+
 .unit {
   color: var(--muted);
   font-size: 0.82rem;
@@ -210,6 +289,10 @@ select:focus {
 
 .report-actions h2 {
   margin-bottom: 0;
+}
+
+.print-report-document {
+  display: none;
 }
 
 .report-content {
@@ -425,6 +508,11 @@ article output {
     padding: 22px;
   }
 
+  .brand-logo {
+    justify-self: start;
+    max-width: 160px;
+  }
+
   .ratio-meter {
     justify-items: start;
     min-width: 0;
@@ -455,6 +543,16 @@ article output {
     padding: 24px 22px;
   }
 
+  .combined-report,
+  .design-form {
+    grid-template-columns: 1fr;
+    padding: 24px 22px;
+  }
+
+  .horizontal-buttons {
+    grid-template-columns: 1fr;
+  }
+
   .report-tools {
     grid-template-columns: 1fr;
   }
@@ -483,6 +581,10 @@ article output {
 }
 
 @media print {
+  @page {
+    margin: 0.45in;
+  }
+
   body {
     background: #ffffff;
   }
@@ -493,21 +595,96 @@ article output {
     padding: 0;
   }
 
-  .workspace {
-    border: 0;
-    box-shadow: none;
-  }
-
-  .print-button,
-  .secondary-button,
+  .masthead,
+  .calculator,
+  .combined-report,
+  .design-form,
+  .report-actions,
   .instructions {
     display: none;
   }
 
-  .masthead,
-  fieldset,
-  .results-panel,
-  .report-actions {
-    padding: 18px 0;
+  .workspace {
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .print-report-document {
+    display: block;
+    color: #111111;
+    font-size: 10.5pt;
+  }
+
+  .print-report-header {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #111111;
+  }
+
+  .print-report-header img {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    background: #3f3a3a;
+  }
+
+  .print-report-header h1 {
+    font-size: 22pt;
+    line-height: 1.1;
+  }
+
+  .print-report-document section {
+    margin-top: 16px;
+    break-inside: avoid;
+  }
+
+  .print-report-document h2 {
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #cfd7df;
+    font-size: 13pt;
+  }
+
+  .print-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .print-grid article {
+    min-height: 58px;
+    padding: 9px;
+    border: 1px solid #cfd7df;
+    border-radius: 0;
+  }
+
+  .print-grid span {
+    color: #666b73;
+    font-size: 8.5pt;
+    font-weight: 800;
+  }
+
+  .print-grid strong {
+    color: #111111;
+    font-size: 10.5pt;
+    font-weight: 850;
+  }
+
+  .print-fill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .print-fill-field {
+    min-height: 88px;
+  }
+
+  .print-fill-field div {
+    height: 38px;
+    margin-top: 12px;
+    border-bottom: 1.5px solid #111111;
   }
 }
