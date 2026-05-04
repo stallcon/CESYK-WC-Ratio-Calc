@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CESYK Water Cement Ratio Calculator</title>
+    <meta
+      name="description"
+      content="A free, public water-cement ratio calculator for concrete mix checks."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <div class="masthead">
+          <div>
+            <p class="eyebrow">CESYK Concrete Tools</p>
+            <h1 id="app-title">CESYK Water Cement Ratio Calculator</h1>
+          </div>
+          <div class="ratio-meter" aria-live="polite">
+            <span class="ratio-label">Water-Cement Ratio</span>
+            <output id="ratio">0.000</output>
+          </div>
+        </div>
+
+        <form class="calculator" id="calculator">
+          <fieldset class="input-panel">
+            <legend>Mix Inputs</legend>
+
+            <label for="unitSystem">
+              <span>Calculation Units</span>
+            </label>
+            <select id="unitSystem" name="unitSystem">
+              <option value="imperial" selected>US Customary</option>
+              <option value="metric">Metric</option>
+            </select>
+
+            <label for="quantity">
+              <span>Quantity Delivered</span>
+              <span class="unit" data-unit="quantity">yds</span>
+            </label>
+            <input id="quantity" name="quantity" type="number" min="0" step="0.01" value="10">
+
+            <label for="cement">
+              <span>Cement + Fly Ash</span>
+              <span class="unit" data-unit="cement">lbs</span>
+            </label>
+            <input id="cement" name="cement" type="number" min="0" step="0.01" value="5640">
+
+            <label for="plantWater">
+              <span>Plant Water</span>
+              <span class="unit" data-unit="water">gal</span>
+            </label>
+            <input id="plantWater" name="plantWater" type="number" min="0" step="0.01" value="293">
+
+            <label for="siteWater">
+              <span>Site Water</span>
+              <span class="unit" data-unit="water">gal</span>
+            </label>
+            <input id="siteWater" name="siteWater" type="number" min="0" step="0.01" value="0">
+          </fieldset>
+
+          <section class="results-panel" aria-labelledby="results-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow dark">Calculated Output</p>
+                <h2 id="results-title">Mix Summary</h2>
+              </div>
+            </div>
+            <div class="result-grid">
+              <article>
+                <span>Cement Factor</span>
+                <output id="cementFactor">1,804.80 lb</output>
+              </article>
+              <article>
+                <span>Plant Water Weight</span>
+                <output id="plantWaterWeight">2,441.57 lb</output>
+              </article>
+              <article>
+                <span>Site Water Weight</span>
+                <output id="siteWaterWeight">0.00 lb</output>
+              </article>
+              <article>
+                <span>Total Water</span>
+                <output id="totalWater">2,441.57 lb</output>
+              </article>
+              <article>
+                <span id="waterPerVolumeLabel">Water Per Yard</span>
+                <output id="waterPerYard">244.16 lb/yd</output>
+              </article>
+              <article>
+                <span id="cementPerVolumeLabel">Cement Per Yard</span>
+                <output id="cementPerYard">564.00 lb/yd</output>
+              </article>
+            </div>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+# Local dependency links and generated folders
+node_modules/
+
+# Local inspection and scratch utilities
+tools/
+
+# Runtime logs and temporary output
+*.log
+*.tmp
+*.temp
+*.png
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
