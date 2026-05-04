@@ -15,8 +15,28 @@
       <section class="workspace" aria-labelledby="app-title">
         <div class="masthead">
           <div>
+            <label class="language-control" for="languageSelect">
+              <span>Language</span>
+              <select class="language-select" id="languageSelect" name="languageSelect">
+                <option value="en">English</option>
+                <option value="zh">Mandarin Chinese</option>
+                <option value="hi">Hindi</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="ar">Arabic</option>
+                <option value="bn">Bengali</option>
+                <option value="pt">Portuguese</option>
+                <option value="ru">Russian</option>
+                <option value="ur">Urdu</option>
+              </select>
+              <button class="language-apply" type="button">Apply</button>
+            </label>
             <p class="eyebrow">CESYK Concrete Tools</p>
             <h1 id="app-title">CESYK Water Cement Ratio Calculator</h1>
+            <a class="page-link" id="designTestingLink" href="design-testing.html">Mix Design and Report</a>
+          </div>
+          <div class="brand-mark" aria-label="Concrete Everything Share Your Knowledge">
+            <img class="brand-logo" src="./assets/logo.png" alt="" data-cesyk-logo>
           </div>
           <div class="ratio-meter" aria-live="polite">
             <span class="ratio-label">Water-Cement Ratio</span>
@@ -43,10 +63,22 @@
             <input id="quantity" name="quantity" type="number" min="0" step="0.01" value="10">
 
             <label for="cement">
-              <span>Cement + Fly Ash</span>
+              <span>Cement</span>
               <span class="unit" data-unit="cement">lbs</span>
             </label>
             <input id="cement" name="cement" type="number" min="0" step="0.01" value="5640">
+
+            <label for="flyAsh">
+              <span>Fly Ash</span>
+              <span class="unit" data-unit="cement">lbs</span>
+            </label>
+            <input id="flyAsh" name="flyAsh" type="number" min="0" step="0.01" value="0">
+
+            <label for="otherScm">
+              <span>Other Supplementary Cement Material</span>
+              <span class="unit" data-unit="cement">lbs</span>
+            </label>
+            <input id="otherScm" name="otherScm" type="number" min="0" step="0.01" value="0">
 
             <label for="plantWater">
               <span>Plant Water</span>
@@ -70,11 +102,11 @@
             </div>
             <div class="result-grid">
               <article>
-                <span>Cement Factor</span>
-                <output id="cementFactor">1,804.80 lb</output>
+                <span>Cement</span>
+                <output id="cementTotal">5,640.00 lb</output>
               </article>
               <article>
-                <span>Plant Water Weight</span>
+                <span>Batch Water Weight</span>
                 <output id="plantWaterWeight">2,441.57 lb</output>
               </article>
               <article>
@@ -96,9 +128,72 @@
             </div>
           </section>
         </form>
+
+        <section class="report-actions" aria-labelledby="report-title">
+          <div>
+            <p class="eyebrow dark">Report</p>
+            <h2 id="report-title">Report Details and PDF</h2>
+          </div>
+          <div class="report-content">
+            <div class="report-meta">
+              <article class="report-field">
+                <label for="projectName">Project Name</label>
+                <input id="projectName" name="projectName" type="text" placeholder="Enter project name">
+              </article>
+              <article>
+                <span>Date</span>
+                <output id="reportDate">--</output>
+              </article>
+              <article>
+                <span>Time</span>
+                <output id="reportTime">--</output>
+              </article>
+              <article>
+                <span>Nearest Address</span>
+                <output id="reportLocation">Requesting location...</output>
+              </article>
+            </div>
+            <p class="location-attribution">Nearest address lookup uses OpenStreetMap Nominatim.</p>
+            <div class="report-tools">
+              <label class="photo-control" for="ticketPhoto">
+                <span>Ticket Photo</span>
+                <strong id="ticketPhotoStatus">Take or attach photo</strong>
+              </label>
+              <input id="ticketPhoto" type="file" accept="image/*" capture="environment">
+              <div class="ticket-preview" id="ticketPreview" aria-live="polite">
+                <span>No ticket photo attached</span>
+              </div>
+              <div class="report-buttons">
+                <button class="secondary-button" id="logLocation" type="button">Log Location</button>
+                <button class="print-button" id="printReport" type="button">Print / Save PDF</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="instructions" aria-labelledby="instructions-title">
+          <div>
+            <p class="eyebrow dark">Step-by-Step</p>
+            <h2 id="instructions-title">How to Use the Calculator</h2>
+          </div>
+          <ol>
+            <li>Select US Customary or Metric from the Calculation Units dropdown.</li>
+            <li>Enter the quantity delivered for the concrete load.</li>
+            <li>Enter cement, fly ash, and other supplementary cement material.</li>
+            <li>Enter plant water and any additional site water.</li>
+            <li>Review the Water-Cement Ratio and Mix Summary values.</li>
+            <li>Enter the project name in Report Details.</li>
+            <li>Optionally open the Mix Design and Report tab to enter the mix design and any third-party test results provided.</li>
+            <li>Attach the ticket photo so it can be included in the PDF report.</li>
+            <li>Confirm the logged location, then print or save the combined report as a PDF.</li>
+          </ol>
+        </section>
+        <section class="print-report-document" id="combinedPrintReport" aria-label="Combined printable report"></section>
       </section>
     </main>
 
+    <script src="i18n.js"></script>
+    <script src="brand-assets.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
