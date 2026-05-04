@@ -80,10 +80,10 @@ function buildCombinedPrintReport() {
 
   combinedPrintReport.innerHTML = `
     <header class="print-report-header">
-      <img src="assets/logo.png" alt="Concrete Everything Share Your Knowledge">
+      <img src="./assets/logo.png" alt="Concrete Everything Share Your Knowledge">
       <div>
         <p class="eyebrow dark">CESYK Concrete Tools</p>
-        <h1>Water-Cement, Design, and Testing Report</h1>
+        <h1>Water-Cement and Mix Design Report</h1>
       </div>
     </header>
 
@@ -119,6 +119,8 @@ function buildCombinedPrintReport() {
     <section>
       <h2>Mix Design</h2>
       <div class="print-grid">
+        ${article("Agency Name", design.agencyName)}
+        ${article("Tester Name", design.testerName)}
         ${article("Mix Design Number", design.mixDesignNumber)}
         ${article("Design Water Cement Ratio", design.designWaterCementRatio)}
         ${article("Design Air", design.designAir)}

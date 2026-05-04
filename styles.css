@@ -81,13 +81,22 @@ body {
   grid-template-columns: minmax(0, 1fr) minmax(120px, 180px);
 }
 
-.brand-logo {
-  width: min(100%, 150px);
-  max-height: 150px;
-  border-radius: 6px;
-  object-fit: contain;
+.brand-mark {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
   justify-self: end;
   background: #3f3a3a;
+  overflow: hidden;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .eyebrow {
@@ -508,9 +517,10 @@ article output {
     padding: 22px;
   }
 
-  .brand-logo {
+  .brand-mark {
     justify-self: start;
-    max-width: 160px;
+    width: 132px;
+    height: 132px;
   }
 
   .ratio-meter {

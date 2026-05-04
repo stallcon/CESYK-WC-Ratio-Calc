@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CESYK Design and Testing</title>
+    <title>CESYK Mix Design and Report</title>
     <meta
       name="description"
       content="Design and testing report page for the CESYK water-cement ratio calculator."
@@ -16,19 +16,23 @@
         <div class="masthead simple-masthead">
           <div>
             <p class="eyebrow">CESYK Concrete Tools</p>
-            <h1 id="design-title">Design and Testing</h1>
+            <h1 id="design-title">Mix Design and Report</h1>
             <a class="page-link" href="index.html">Water-Cement Calculator</a>
           </div>
-          <img
-            class="brand-logo"
-            src="assets/logo.png"
-            alt="Concrete Everything Share Your Knowledge"
-          >
+          <div class="brand-mark" aria-label="Concrete Everything Share Your Knowledge">
+            <img class="brand-logo" src="./assets/logo.png" alt="">
+          </div>
         </div>
 
         <form class="design-form" id="designForm">
           <fieldset class="design-panel">
             <legend>Mix Design</legend>
+
+            <label for="agencyName">Agency Name</label>
+            <input id="agencyName" name="agencyName" type="text">
+
+            <label for="testerName">Tester Name</label>
+            <input id="testerName" name="testerName" type="text">
 
             <label for="mixDesignNumber">Mix Design Number</label>
             <input id="mixDesignNumber" name="mixDesignNumber" type="text">
@@ -66,11 +70,11 @@
         <section class="instructions" aria-labelledby="design-instructions-title">
           <div>
             <p class="eyebrow dark">Optional</p>
-            <h2 id="design-instructions-title">Design and Testing Instructions</h2>
+            <h2 id="design-instructions-title">Mix Design and Report Instructions</h2>
           </div>
           <ol>
-            <li>Enter the mix design number and target design values if they are available.</li>
-            <li>Enter fresh concrete test results after field testing is complete.</li>
+            <li>Enter the agency name, tester name, mix design number, and target design values if they are available.</li>
+            <li>Enter any fresh concrete test results provided by a third-party testing agency.</li>
             <li>Open the calculator page first if the water-cement summary needs to be refreshed.</li>
             <li>Print or save the combined report as a PDF.</li>
             <li>Fill in 7 day, 28 day, 56 day, and modulus rupture results in the printed PDF report.</li>
